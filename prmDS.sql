@@ -50,7 +50,7 @@ AND rct2.RContractCode = 141
 AND rct2.ContractStartDate between @periodfrom and @periodto
 AND ((CASE WHEN (rct2.ContractEndDate = convert(date,'01.01.1900',104)) then null else rct2.ContractEndDate END) IS NOT NULL)
 AND rct2.ContractEndDate < @periodto
-AND (((SELECT MIN(ctr.transDate) FROM CustTrans AS ctr WHERE ctr.dataareaid = @dataareaid AND rct2.RContractId_UA = ctr.DIMENSION5_ AND ctr.TransType = 15 AND ctr.AmountCur < 0) IS NULL) OR ((rct2.ContractEndDate < (SELECT MIN(ctr.transDate) FROM CustTrans AS ctr WHERE ctr.dataareaid = @dataareaid AND rct2.RContractId_UA = ctr.DIMENSION5_ AND ctr.TransType = 15 AND ctr.AmountCur < 0)) AND ((SELECT TOP(1) rcaa.RContractId FROM RContractAddAgreement_UA AS rcaa WHERE rcaa.RContractId = rct2.RContractId_UA AND rcaa.dataareaid = @dataareaid) IS NULL))))
+AND ((((SELECT MIN(ctr.transDate) FROM CustTrans AS ctr WHERE ctr.dataareaid = @dataareaid AND rct2.RContractId_UA = ctr.DIMENSION5_ AND ctr.TransType = 15 AND ctr.AmountCur < 0) IS NULL) AND rct2.dateofissue > convert(date,'28.01.2022',104)) OR ((rct2.ContractEndDate < (SELECT MIN(ctr.transDate) FROM CustTrans AS ctr WHERE ctr.dataareaid = @dataareaid AND rct2.RContractId_UA = ctr.DIMENSION5_ AND ctr.TransType = 15 AND ctr.AmountCur < 0)) AND ((SELECT TOP(1) rcaa.RContractId FROM RContractAddAgreement_UA AS rcaa WHERE rcaa.RContractId = rct2.RContractId_UA AND rcaa.dataareaid = @dataareaid) IS NULL))))
 SELECT rct.Dimension AS Site, rct.NumberTU AS NumberTU, rct.NumContractTU AS NumContractTU, rct.RegistrationDate AS TYRegDate, rct.RContractNumber AS RContractNumber, 
 rct.ContractDate AS ContractDate, rct.PowerOrderedForJoining2 AS PowerOrderedForJoining2, rct.AccessionType AS AccessionType, (YEAR(rct.PlannedDate)) AS PlannedYear,
 CASE 
@@ -73,7 +73,7 @@ AND (rct.RegistrationDate between @periodfrom and @periodto)
 AND rct.CustWFDocIdInb2 = ''
 AND rct.STAGE_UA <> 4
 AND rct.CustWFDocIdOut4 = ''
-AND (SELECT min(ct.TransDate) FROM CustTrans AS ct WHERE rct.RContractId_UA = ct.DIMENSION5_) <> ''
+AND (((SELECT min(ct.TransDate) FROM CustTrans AS ct WHERE rct.RContractId_UA = ct.DIMENSION5_) <> '') OR (((SELECT min(ct.TransDate) FROM CustTrans AS ct WHERE rct.RContractId_UA = ct.DIMENSION5_) IS NULL) AND rct.dateofissue > convert(date,'28.01.2022',104)))
 GROUP BY NumContractTU,
 rct.Dimension , rct.NumberTU , rct.NumContractTU , rct.RegistrationDate , rct.RContractNumber, 
 rct.ContractDate , rct.PowerOrderedForJoining2 , rct.AccessionType , (YEAR(rct.PlannedDate)) ,rct.AccountNum,rct.AccountNumName,rct.VoltaeOverall,rct.CustWfContractType,rct.MoneyDate, rct.RContractId_UA, term_expired.teRContractID 
